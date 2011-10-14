@@ -1,4 +1,5 @@
 require 'zlib'
+require 'curb'
 require 'sax-machine'
 require 'loofah'
 require 'uri'
