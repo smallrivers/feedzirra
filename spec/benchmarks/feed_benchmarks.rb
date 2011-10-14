@@ -1,7 +1,6 @@
 # this is some spike code to compare the speed of different methods for performing
 # multiple feed fetches
 require 'rubygems'
-require 'curb'
 require 'active_support'
 
 require 'net/http'
@@ -16,26 +15,26 @@ urls = ["http://www.pauldix.net"] * GET_COUNT
 
 benchmark do |t|
   t.report("taf2-curb") do
-    multi = Curl::Multi.new
-    urls.each do |url|
-      easy = Curl::Easy.new(url) do |curl|
-        curl.headers["User-Agent"] = "feedzirra"
-    #    curl.headers["If-Modified-Since"] = Time.now.httpdate
-    #    curl.headers["If-None-Match"] = "ziEyTl4q9GH04BR4jgkImd0GvSE"
-        curl.follow_location = true
-        curl.on_success do |c|
-    #      puts c.header_str.inspect
-#          puts c.response_code
-    #      puts c.body_str.slice(0, 500)
-        end
-        curl.on_failure do |c|
-          puts "**** #{c.response_code}"
-        end
-      end
-      multi.add(easy)
-    end
+#     multi = Curl::Multi.new
+#     urls.each do |url|
+#       easy = Curl::Easy.new(url) do |curl|
+#         curl.headers["User-Agent"] = "feedzirra"
+#     #    curl.headers["If-Modified-Since"] = Time.now.httpdate
+#     #    curl.headers["If-None-Match"] = "ziEyTl4q9GH04BR4jgkImd0GvSE"
+#         curl.follow_location = true
+#         curl.on_success do |c|
+#     #      puts c.header_str.inspect
+# #          puts c.response_code
+#     #      puts c.body_str.slice(0, 500)
+#         end
+#         curl.on_failure do |c|
+#           puts "**** #{c.response_code}"
+#         end
+#       end
+#       multi.add(easy)
+#     end
 
-    multi.perform
+#     multi.perform
   end
 
   t.report("nethttp") do
@@ -44,14 +43,14 @@ benchmark do |t|
 #      puts res.slice(0, 500)
     end
   end
-  
+
   require 'rfuzz/session'
-  include RFuzz 
+  include RFuzz
   t.report("rfuzz") do
     GET_COUNT.times do
       http = HttpClient.new("www.pauldix.net", 80)
       response = http.get("/")
-      if response.http_status != "200" 
+      if response.http_status != "200"
         puts "***** #{response.http_status}"
       else
 #        puts response.http_status
@@ -59,7 +58,7 @@ benchmark do |t|
       end
     end
   end
-  
+
   require 'eventmachine'
   t.report("eventmachine") do
     counter = GET_COUNT
@@ -76,8 +75,8 @@ benchmark do |t|
       end
     end
   end
-  
-  
+
+
   require 'curl-multi'
   t.report("curl multi") do
     multi = Curl::Multi.new
